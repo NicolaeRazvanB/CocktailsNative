@@ -7,11 +7,15 @@ import {
   FlatList,
   Image,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function SearchCocktailsScreen() {
   const [searchTerm, setSearchTerm] = useState("");
   const [cocktails, setCocktails] = useState([]);
+
+  const navigation = useNavigation();
 
   const searchCocktails = async () => {
     const response = await fetch(
@@ -21,15 +25,22 @@ export default function SearchCocktailsScreen() {
     setCocktails(data.drinks);
   };
 
+  const handleCardPress = (cocktail) => {
+    navigation.navigate("CocktailDetailsScreen", { cocktail });
+  };
+
   const renderCocktail = ({ item }) => {
     const windowWidth = Dimensions.get("window").width;
     const cardWidth = (windowWidth - 30) / 2;
 
     return (
-      <View style={[styles.card, { width: cardWidth }]}>
+      <TouchableOpacity
+        style={[styles.card, { width: cardWidth }]}
+        onPress={() => handleCardPress(item)}
+      >
         <Image style={styles.image} source={{ uri: item.strDrinkThumb }} />
         <Text style={styles.title}>{item.strDrink}</Text>
-      </View>
+      </TouchableOpacity>
     );
   };
 

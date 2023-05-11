@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { ImageBackground } from "react-native";
 import SearchCocktailsScreen from "./Views/SearchCocktails";
 import ViewFavoriteCocktailsScreen from "./Views/FavouriteCocktails";
+import CocktailDetailsScreen from "./Views/CocktailDetailsScreen";
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,19 @@ export default function App() {
               color: "white",
             },
           }}
+        />
+        <Stack.Screen
+          name="CocktailDetailsScreen"
+          component={CocktailDetailsScreen}
+          options={({ route }) => ({
+            title: route.params.cocktail.strDrink,
+            headerStyle: {
+              backgroundColor: "black",
+            },
+            headerTitleStyle: {
+              color: "white",
+            },
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>
