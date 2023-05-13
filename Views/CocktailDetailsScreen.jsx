@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 // import SQLite from "react-native-sqlite-storage";
-import * as SQLite from "expo-sqlite";
+import * as SQLite from 'expo-sqlite';
 
 export default function CocktailDetailsScreen({ route }) {
   const { cocktail } = route.params;
   const [saved, setSaved] = useState(false);
 
   let ingredients = [];
-  let ingredientsText = "";
-  let measuresText = "";
+  let ingredientsText = '';
+  let measuresText = '';
 
   for (let i = 1; i <= 15; i++) {
     const ingredient = cocktail[`strIngredient${i}`];
@@ -29,24 +29,51 @@ export default function CocktailDetailsScreen({ route }) {
   }
 
   // --- db functionality ---
-  const db = SQLite.openDatabase("savedCocktails.db");
+  const db = SQLite.openDatabase('savedCocktails.db');
+
+  //   db.transaction((tx) => {
+  //     tx.executeSql(
+  //       'DROP TABLE IF EXISTS favorites',
+  //       [],
+  //       () => console.log('Favorites table deleted'),
+  //       //   console.log(cocktail),
+  //       //   console.log(ingredientsText),
+  //       //   console.log(measuresText),
+  //       (err) => console.log('Error:', err)
+  //     );
+  //   });
+
   db.transaction((tx) => {
     tx.executeSql(
-      "CREATE TABLE IF NOT EXISTS favorites (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT, type TEXT, glass TEXT, instructions TEXT, imageUrl TEXT, ingredients TEXT, measures TEXT);",
+      'CREATE TABLE IF NOT EXISTS favorites (idDrink TEXT PRIMARY KEY, name TEXT, category TEXT, type TEXT, glass TEXT, instructions TEXT, imageUrl TEXT, ingredients TEXT, measures TEXT);',
       [],
-      () => console.log("Favorites table created"),
-      //   console.log(cocktail),
-      //   console.log(ingredientsText),
-      //   console.log(measuresText),
-      (err) => console.log("Error:", err)
+      () => console.log('Favorites table created'),
+      (err) => console.log('Error:', err)
     );
   });
+
+  const deleteCocktail = (idDrink) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        'DELETE FROM favorites WHERE idDrink = ?',
+        [idDrink],
+        () => {
+          console.log('Cocktail deleted to favorites');
+          tx.executeSql('SELECT * FROM favorites', [], (_, { rows }) =>
+            console.log(rows)
+          );
+        },
+        (err) => console.log('Error deleting cocktail:', err)
+      );
+    });
+  };
 
   const handleSaveToFavorites = () => {
     db.transaction((tx) => {
       tx.executeSql(
-        "INSERT INTO favorites (name, category, type, glass, instructions, imageUrl, ingredients, measures) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        'INSERT INTO favorites (idDrink, name, category, type, glass, instructions, imageUrl, ingredients, measures) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [
+          cocktail.idDrink,
           cocktail.strDrink,
           cocktail.strCategory,
           cocktail.strAlcoholic,
@@ -57,12 +84,12 @@ export default function CocktailDetailsScreen({ route }) {
           measuresText,
         ],
         () => {
-          console.log("Cocktail saved to favorites");
-          tx.executeSql("SELECT * FROM favorites", [], (_, { rows }) =>
+          console.log('Cocktail saved to favorites');
+          tx.executeSql('SELECT * FROM favorites', [], (_, { rows }) =>
             console.log(rows)
           );
         },
-        (err) => console.log("Error inserting cocktail into favorites:", err)
+        (err) => console.log('Error inserting cocktail into favorites:', err)
       );
     });
   };
@@ -78,6 +105,12 @@ export default function CocktailDetailsScreen({ route }) {
         <TouchableOpacity style={styles.button} onPress={handleSaveToFavorites}>
           <Text style={styles.buttonText}>Save to Favorites</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => deleteCocktail(cocktail.idDrink)}
+        >
+          <Text style={styles.buttonText}>Delete from Favorites</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.imageContainer}>
         <Image style={styles.image} source={{ uri: cocktail.strDrinkThumb }} />
@@ -89,49 +122,49 @@ export default function CocktailDetailsScreen({ route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "stretch",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
     padding: 10,
   },
   textContainer: {
     flex: 1,
-    alignItems: "flex-start",
-    justifyContent: "flex-start",
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     padding: 10,
   },
   imageContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 10,
   },
   title: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 5,
   },
   image: {
-    height: "100%",
-    width: "100%",
-    resizeMode: "cover",
+    height: '100%',
+    width: '100%',
+    resizeMode: 'cover',
   },
   button: {
-    backgroundColor: "blue",
+    backgroundColor: 'blue',
     borderRadius: 5,
     padding: 10,
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end',
     marginTop: 10,
   },
   buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+    fontWeight: 'bold',
     fontSize: 16,
   },
 });
