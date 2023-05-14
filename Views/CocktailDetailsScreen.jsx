@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import * as SQLite from "expo-sqlite";
 
 export default function CocktailDetailsScreen({ route }) {
     const { cocktail } = route.params;
-    const { db } = route.params;
+    // const { db } = route.params;
+    const db = SQLite.openDatabase("./savedCocktails.db");
     const [saved, setSaved] = useState(false);
     // const [db, setDb] = useState(null);
 
@@ -40,7 +42,7 @@ export default function CocktailDetailsScreen({ route }) {
                 "DELETE FROM favorites WHERE idDrink = ?",
                 [idDrink],
                 () => {
-                    console.log("Cocktail deleted to favorites");
+                    console.log("Cocktail deleted from favorites");
                     tx.executeSql(
                         "SELECT * FROM favorites",
                         [],

@@ -14,7 +14,6 @@ import { useNavigation } from "@react-navigation/native";
 export default function SearchCocktailsScreen({ route }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [cocktails, setCocktails] = useState([]);
-    const { db } = route.params;
     // const [db, setDb] = useState(false);
 
     // useEffect(() => {
@@ -35,7 +34,7 @@ export default function SearchCocktailsScreen({ route }) {
     };
 
     const handleCardPress = (cocktail) => {
-        console.log(db);
+        // console.log(db);
         // navigation.navigate("CocktailDetailsScreen", { cocktail, db });
         navigation.navigate("CocktailDetailsScreen", { cocktail });
     };

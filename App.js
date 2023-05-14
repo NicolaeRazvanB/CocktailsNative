@@ -12,11 +12,12 @@ import * as SQLite from "expo-sqlite";
 const Stack = createStackNavigator();
 
 export default function App() {
-    const [db, setDb] = useState(null);
+    // const [db, setDb] = useState(null);
 
     useEffect(() => {
-        const dbFile = SQLite.openDatabase("savedCocktails.db");
+        const db = SQLite.openDatabase("savedCocktails.db");
 
+        // --- cod de sters bd daca e nevoie la debugging - NU STERGETI
         // dbFile.transaction((tx) => {
         //     tx.executeSql(
         //         "DROP TABLE IF EXISTS favorites",
@@ -29,7 +30,7 @@ export default function App() {
         //     );
         // });
 
-        dbFile.transaction((tx) => {
+        db.transaction((tx) => {
             tx.executeSql(
                 "CREATE TABLE IF NOT EXISTS favorites (idDrink TEXT PRIMARY KEY, name TEXT, category TEXT, type TEXT, glass TEXT, instructions TEXT, imageUrl TEXT, ingredients TEXT, measures TEXT);",
                 [],
@@ -37,7 +38,7 @@ export default function App() {
                 (err) => console.log("Error:", err)
             );
         });
-        setDb(dbFile);
+        // setDb(dbFile);
     }, []);
 
     return (
@@ -55,7 +56,7 @@ export default function App() {
                             color: "white",
                         },
                     }}
-                    initialParams={{ db }}
+                    // initialParams={{ db }}
                 />
                 <Stack.Screen
                     name="Favorites"
@@ -69,7 +70,7 @@ export default function App() {
                             color: "white",
                         },
                     }}
-                    initialParams={{ db }}
+                    // initialParams={{ db }}
                 />
                 <Stack.Screen
                     name="Search"
@@ -83,7 +84,7 @@ export default function App() {
                             color: "white",
                         },
                     }}
-                    initialParams={{ db }}
+                    // initialParams={{ db }}
                 />
                 <Stack.Screen
                     name="CocktailDetailsScreen"
@@ -97,7 +98,7 @@ export default function App() {
                             color: "white",
                         },
                     })}
-                    initialParams={{ db }}
+                    // initialParams={{ db }}
                 />
             </Stack.Navigator>
         </NavigationContainer>
