@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import * as SQLite from "expo-sqlite";
 
-export default function ViewFavoriteCocktailsScreen({ route }) {
+export default function FavoriteCocktails({ route }) {
     const [cocktails, setCocktails] = useState([]);
     // const { db } = route.params;
     const db = SQLite.openDatabase("savedCocktails.db");

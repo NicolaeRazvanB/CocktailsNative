@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
-export default function SearchCocktailsScreen({ route }) {
+export default function SearchCocktails({ route }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [cocktails, setCocktails] = useState([]);
     // const [db, setDb] = useState(false);
