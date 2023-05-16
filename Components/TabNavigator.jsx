@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         width: 10,
         height: 2,
-        left: sizes.width / tabs.length / 2 - 5,
+        left: sizes.width / tabs.length / 2 - 10,
         bottom: 30,
         backgroundColor: colors.primary,
         zIndex: 100,

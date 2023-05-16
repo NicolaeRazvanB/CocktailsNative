@@ -1,9 +1,11 @@
 import React, { useRef, useState, useEffect } from "react";
 import { Animated } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 import CustomSplashScreen from "./Components/CustomSplashScreen";
 import StackNavigator from "./Components/StackNavigator";
 import TabNavigator from "./Components/TabNavigator";
+import CocktailDetailsScreen from "./Views/CocktailDetailsScreen";
 
 import * as SQLite from "expo-sqlite";
 import * as Font from "expo-font";
@@ -16,6 +18,7 @@ export default function App() {
     const [splashLoaded, setSplashLoaded] = useState(false);
     const [fontsLoaded, setFontsLoaded] = useState(false);
     const fadeInAnim = useRef(new Animated.Value(0)).current;
+    const Stack = createStackNavigator();
 
     useEffect(() => {
         Animated.timing(fadeInAnim, {
@@ -67,7 +70,20 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <TabNavigator />
+            <Stack.Navigator initialRouteName="Tab">
+                <Stack.Screen
+                    name="Tab"
+                    component={TabNavigator}
+                    options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                    name="CocktailDetailsScreen"
+                    component={CocktailDetailsScreen}
+                    options={({ route }) => ({
+                        title: route.params.cocktail.strDrink,
+                    })}
+                />
+            </Stack.Navigator>
         </NavigationContainer>
     );
 }
