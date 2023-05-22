@@ -1,22 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Image, StyleSheet } from "react-native";
+import {
+    View,
+    Text,
+    ScrollView,
+    Image,
+    StyleSheet,
+    ActivityIndicator,
+    TouchableOpacity,
+} from "react-native";
 import axios from "axios";
-const CocktailCard = ({ image, name }) => {
+import { useNavigation } from "@react-navigation/native";
+
+const CocktailCard = ({ cocktail }) => {
+    const navigation = useNavigation();
+
+    const handleCardPress = (cocktail) => {
+        navigation.navigate("CocktailDetailsScreen", { cocktail });
+    };
     return (
-        <View style={styles.card}>
+        <TouchableOpacity
+            style={styles.card}
+            onPress={() => handleCardPress(cocktail)}
+        >
             <Image
-                source={{ uri: image }}
+                source={{ uri: cocktail.strDrinkThumb }}
                 style={styles.cardImage}
                 resizeMode="cover"
             />
-            <Text style={styles.cardName}>{name}</Text>
-        </View>
+            <Text style={styles.cardName}>{cocktail.strDrink}</Text>
+        </TouchableOpacity>
     );
 };
 
 const CocktailCategory = ({ title, cocktailIds }) => {
     const [cocktails, setCocktails] = useState([]);
-
+    const [isLoading, setIsLoading] = useState(true);
     useEffect(() => {
         const fetchCocktails = async () => {
             try {
@@ -29,6 +47,7 @@ const CocktailCategory = ({ title, cocktailIds }) => {
                 );
                 const data = response.map((res) => res.data.drinks[0]);
                 setCocktails(data);
+                setIsLoading(false);
             } catch (error) {
                 console.error("Error fetching cocktails:", error);
             }
@@ -40,15 +59,18 @@ const CocktailCategory = ({ title, cocktailIds }) => {
     return (
         <View style={styles.categoryContainer}>
             <Text style={styles.categoryTitle}>{title}</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {cocktails.map((cocktail) => (
-                    <CocktailCard
-                        key={cocktail.idDrink}
-                        image={cocktail.strDrinkThumb}
-                        name={cocktail.strDrink}
-                    />
-                ))}
-            </ScrollView>
+            {isLoading ? (
+                <ActivityIndicator size="small" color="#0000ff" />
+            ) : (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    {cocktails.map((cocktail) => (
+                        <CocktailCard
+                            key={cocktail.idDrink}
+                            cocktail={cocktail}
+                        />
+                    ))}
+                </ScrollView>
+            )}
         </View>
     );
 };

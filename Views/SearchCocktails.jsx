@@ -34,8 +34,6 @@ export default function SearchCocktails({ route }) {
     };
 
     const handleCardPress = (cocktail) => {
-        // console.log(db);
-        // navigation.navigate("CocktailDetailsScreen", { cocktail, db });
         navigation.navigate("CocktailDetailsScreen", { cocktail });
     };
 
