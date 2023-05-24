@@ -6,6 +6,7 @@ import CustomSplashScreen from "./Components/CustomSplashScreen";
 import StackNavigator from "./Components/StackNavigator";
 import TabNavigator from "./Components/TabNavigator";
 import CocktailDetailsScreen from "./Views/CocktailDetailsScreen";
+import FavouriteCocktailDetailsScreen from "./Views/FavouriteCocktailsDetailsScreen";
 
 import * as SQLite from "expo-sqlite";
 import * as Font from "expo-font";
@@ -81,6 +82,13 @@ export default function App() {
                     component={CocktailDetailsScreen}
                     options={({ route }) => ({
                         title: route.params.cocktail.strDrink,
+                    })}
+                />
+                <Stack.Screen
+                    name="FavouriteCocktailDetailsScreen"
+                    component={FavouriteCocktailDetailsScreen}
+                    options={({ route }) => ({
+                        title: route.params.cocktail.name,
                     })}
                 />
             </Stack.Navigator>

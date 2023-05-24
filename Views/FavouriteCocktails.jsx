@@ -9,11 +9,13 @@ import {
     Dimensions,
 } from "react-native";
 import * as SQLite from "expo-sqlite";
+import { useNavigation } from "@react-navigation/native";
 
 export default function FavoriteCocktails({ route }) {
     const [cocktails, setCocktails] = useState([]);
     // const { db } = route.params;
     const db = SQLite.openDatabase("savedCocktails.db");
+    const navigation = useNavigation();
 
     useEffect(() => {
         try {
@@ -34,7 +36,7 @@ export default function FavoriteCocktails({ route }) {
     }, []);
 
     const handleCardPress = (cocktail) => {
-        navigation.navigate("SavedCocktailDetailsScreen", { cocktail });
+        navigation.navigate("FavouriteCocktailDetailsScreen", { cocktail });
     };
 
     const renderCocktail = ({ item }) => {
