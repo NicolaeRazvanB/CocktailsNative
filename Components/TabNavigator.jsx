@@ -13,7 +13,7 @@ const tabs = [
         screen: HomeScreen,
     },
     {
-        name: "Search",
+        name: "Discover",
         screen: SearchCocktails,
     },
     {

@@ -10,18 +10,11 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { colors } from "../constants/theme";
 
 export default function SearchCocktails({ route }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [cocktails, setCocktails] = useState([]);
-    // const [db, setDb] = useState(false);
-
-    // useEffect(() => {
-    //     console.log(route.params);
-    //     if (route.params && route.params.db) {
-    //         setDb(route.params.db);
-    //     }
-    // }, [route.params]);
 
     const navigation = useNavigation();
 
@@ -39,7 +32,7 @@ export default function SearchCocktails({ route }) {
 
     const renderCocktail = ({ item }) => {
         const windowWidth = Dimensions.get("window").width;
-        const cardWidth = (windowWidth - 30) / 2;
+        const cardWidth = (windowWidth - 60) / 2;
 
         return (
             <TouchableOpacity
@@ -57,7 +50,12 @@ export default function SearchCocktails({ route }) {
 
     return (
         <View style={styles.container}>
+            <Text style={styles.text}>What do you want to explore today?</Text>
             <View style={styles.searchBarContainer}>
+                <Image
+                    source={require("../assets/icons/icons8_search_100.png")}
+                    style={styles.searchIcon}
+                />
                 <TextInput
                     style={styles.searchBar}
                     placeholder="Search Cocktails"
@@ -81,6 +79,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-start",
         padding: 10,
+        backgroundColor: colors.dirtyWhite,
+    },
+    text: {
+        fontStyle: "italic",
+        fontSize: 16,
+        paddingBottom: 10,
     },
     searchBarContainer: {
         flexDirection: "row",
@@ -98,6 +102,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         alignSelf: "center",
         marginHorizontal: "auto",
+        borderRadius: 20,
+        paddingLeft: 36,
+    },
+    searchIcon: {
+        position: "absolute",
+        top: 8,
+        left: 152,
+        width: 25,
+        height: 25,
+        tintColor: colors.lightGray,
     },
     card: {
         backgroundColor: "#fff",
@@ -111,8 +125,8 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-
         elevation: 5,
+        margin: 5,
     },
     title: {
         fontSize: 18,
