@@ -9,7 +9,7 @@ import FavoriteCocktails from "../Views/FavouriteCocktails";
 
 const tabs = [
     {
-        name: "Home",
+        name: "CocktailsApp",
         screen: HomeScreen,
     },
     {
@@ -17,7 +17,7 @@ const tabs = [
         screen: SearchCocktails,
     },
     {
-        name: "Favorite",
+        name: "Favorites",
         screen: FavoriteCocktails,
     },
 ];
@@ -31,8 +31,9 @@ const TabNavigator = () => {
             <Tab.Navigator
                 initialRouteName="Home"
                 screenOptions={{
-                    headerShown: false,
+                    headerShown: true,
                     tabBarShowLabel: false,
+                    headerTitleAlign: "center",
                 }}
             >
                 {tabs.map(({ name, screen }, index) => {
@@ -69,18 +70,6 @@ const TabNavigator = () => {
                     );
                 })}
             </Tab.Navigator>
-            <Animated.View
-                style={[
-                    styles.indicator,
-                    {
-                        transform: [
-                            {
-                                translateX: offsetAnimation,
-                            },
-                        ],
-                    },
-                ]}
-            />
         </>
     );
 };

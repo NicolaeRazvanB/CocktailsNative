@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { colors } from "../constants/theme";
 
 const CocktailCard = ({ cocktail }) => {
     const navigation = useNavigation();
@@ -91,9 +92,8 @@ export default function HomeScreen() {
         "15224",
         "11008",
     ];
-
     return (
-        <View style={styles.container}>
+        <ScrollView style={styles.container}>
             <CocktailCategory
                 title="Alcoholic Cocktails"
                 cocktailIds={alcoholicCocktailIds}
@@ -106,7 +106,7 @@ export default function HomeScreen() {
                 title="Holiday Picks"
                 cocktailIds={holidayPicksCocktailIds}
             />
-        </View>
+        </ScrollView>
     );
 }
 
@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 10,
         paddingTop: 20,
+        backgroundColor: colors.dirtyWhite,
     },
     title: {
         fontSize: 22,
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     categoryContainer: {
-        marginBottom: 20,
+        marginBottom: 30,
     },
     categoryTitle: {
         fontSize: 18,
