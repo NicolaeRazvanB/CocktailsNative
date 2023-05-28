@@ -10,11 +10,12 @@ import {
     TouchableOpacity,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { colors } from "../constants/theme";
+import { colors, shadow } from "../constants/theme";
 
 export default function SearchCocktails({ route }) {
     const [searchTerm, setSearchTerm] = useState("");
     const [cocktails, setCocktails] = useState([]);
+    const [filter, setFilter] = useState("");
 
     const navigation = useNavigation();
 
@@ -29,6 +30,24 @@ export default function SearchCocktails({ route }) {
     const handleCardPress = (cocktail) => {
         navigation.navigate("CocktailDetailsScreen", { cocktail });
     };
+
+    const handleFilterPress = (value) => {
+        setFilter(value);
+    };
+
+    const handleShowAll = () => {
+        setFilter("");
+    };
+
+    const filteredCocktails = cocktails.filter((cocktail) => {
+        if (filter === "Alcoholic") {
+            return cocktail.strAlcoholic === "Alcoholic";
+        } else if (filter === "Non-Alcoholic") {
+            return cocktail.strAlcoholic === "Non alcoholic";
+        } else {
+            return true;
+        }
+    });
 
     const renderCocktail = ({ item }) => {
         const windowWidth = Dimensions.get("window").width;
@@ -63,12 +82,46 @@ export default function SearchCocktails({ route }) {
                     onSubmitEditing={searchCocktails}
                 />
             </View>
-            <FlatList
-                data={cocktails}
-                renderItem={renderCocktail}
-                keyExtractor={(item) => item.idDrink}
-                numColumns={2}
-            />
+            <View style={styles.filtersContainer}>
+                <Text>Filter the results:</Text>
+                <TouchableOpacity
+                    style={[styles.button, !filter && styles.activeButton]}
+                    onPress={handleShowAll}
+                >
+                    <Text style={styles.buttonText}>Show All</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                        styles.button,
+                        filter === "Alcoholic" && styles.activeButton,
+                    ]}
+                    onPress={() => handleFilterPress("Alcoholic")}
+                >
+                    <Text style={styles.buttonText}>Alcoholic</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[
+                        styles.button,
+                        filter === "Non-Alcoholic" && styles.activeButton,
+                    ]}
+                    onPress={() => handleFilterPress("Non-Alcoholic")}
+                >
+                    <Text style={styles.buttonText}>Non-Alcoholic</Text>
+                </TouchableOpacity>
+            </View>
+
+            {filteredCocktails.length ? (
+                <FlatList
+                    data={filteredCocktails}
+                    renderItem={renderCocktail}
+                    keyExtractor={(item) => item.idDrink}
+                    numColumns={2}
+                />
+            ) : (
+                <View style={styles.noResultsContainer}>
+                    <Text style={styles.noResultsText}>No cocktails found</Text>
+                </View>
+            )}
         </View>
     );
 }
@@ -86,32 +139,71 @@ const styles = StyleSheet.create({
         fontSize: 16,
         paddingBottom: 10,
     },
-    searchBarContainer: {
-        flexDirection: "row",
+    noResultsContainer: {
+        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        width: "100%",
+        height: "100%",
+    },
+    noResultsText: {
+        fontStyle: "italic",
+        fontSize: 16,
+    },
+    searchBarContainer: {
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "flex-start",
         marginBottom: 10,
+        // border: "1px solid black",
+        borderColor: colors.primary,
+        borderWidth: 1,
+        borderRadius: 20,
+        width: "80%",
+        paddingLeft: 10,
     },
     searchBar: {
         height: 40,
-        width: "50%",
-        borderColor: "gray",
-        borderWidth: 1,
-        marginBottom: 10,
-        paddingHorizontal: 10,
-        alignSelf: "center",
-        marginHorizontal: "auto",
-        borderRadius: 20,
-        paddingLeft: 36,
+        // width: "50%",
+        // marginBottom: 10,
+        // paddingHorizontal: 10,
+        // alignSelf: "center",
+        // marginHorizontal: "auto",
+        flex: 1,
+        marginLeft: 10,
     },
     searchIcon: {
-        position: "absolute",
-        top: 8,
-        left: 152,
-        width: 25,
-        height: 25,
+        width: 22,
+        height: 22,
         tintColor: colors.lightGray,
+    },
+    filtersContainer: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginVertical: 10,
+    },
+    button: {
+        backgroundColor: colors.blue,
+        borderRadius: 20,
+        padding: 10,
+        height: 35,
+        marginHorizontal: 5,
+    },
+    activeButton: {
+        backgroundColor: colors.lightBlue,
+        borderRadius: 20,
+        padding: 10,
+        height: 35,
+        marginHorizontal: 5,
+    },
+    buttonText: {
+        color: colors.black,
+        fontWeight: "400",
+        fontSize: 12,
+        alignSelf: "center",
+        paddingHorizontal: 5,
     },
     card: {
         backgroundColor: "#fff",

@@ -94,6 +94,7 @@ export default function HomeScreen() {
     ];
     return (
         <ScrollView style={styles.container}>
+            <Text style={styles.title}>Discover our top picks</Text>
             <CocktailCategory
                 title="Alcoholic Cocktails"
                 cocktailIds={alcoholicCocktailIds}
@@ -121,6 +122,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: "bold",
         marginBottom: 10,
+        color: colors.primary,
     },
     categoryContainer: {
         marginBottom: 30,
@@ -129,6 +131,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         marginBottom: 10,
+        color: colors.primary,
     },
     card: {
         width: 190,

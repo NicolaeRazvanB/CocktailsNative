@@ -11,6 +11,7 @@ export const colors = {
     black: "#000",
     dirtyWhite: "#F8F8FA",
     blue: "#A9D2D5",
+    lightBlue: "#98DFD5",
 };
 
 export const shadow = {

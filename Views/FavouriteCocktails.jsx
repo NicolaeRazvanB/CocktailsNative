@@ -61,6 +61,7 @@ export default function FavoriteCocktails({ route }) {
                     data={cocktails}
                     renderItem={renderCocktail}
                     keyExtractor={(item) => item.idDrink}
+                    numColumns={2}
                 />
             ) : (
                 <Text>No saved cocktails found</Text>
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-
+        margin: 5,
         elevation: 5,
     },
     title: {
