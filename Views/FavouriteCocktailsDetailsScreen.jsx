@@ -9,7 +9,15 @@ export default function FavouriteCocktailDetailsScreen({ route }) {
 
     const ingredientsList = cocktail.ingredients.split(";");
     const measuresList = cocktail.measures.split(";");
-
+    const ingredients = [];
+    for (let i = 0; i < ingredientsList.length; i++) {
+        const measure = measuresList[i] ? measuresList[i] : "-";
+        if (ingredientsList[i] && measure)
+            ingredients.push({
+                ingredient: ingredientsList[i],
+                measure: measure,
+            });
+    }
     const deleteCocktail = (idDrink) => {
         db.transaction((tx) => {
             tx.executeSql(
@@ -34,23 +42,17 @@ export default function FavouriteCocktailDetailsScreen({ route }) {
                 <Text style={styles.title}>{cocktail.name}</Text>
                 <Text style={styles.subtitle}>Ingredients:</Text>
                 <View style={styles.tableContainer}>
-                    {ingredientsList.map((ingredient, index) => {
-                        const measure = measuresList[index]
-                            ? measuresList[index]
-                            : "-";
-                        if (ingredient && measure) {
-                            return (
-                                <View style={styles.tableRow} key={index}>
-                                    <Text style={styles.ingredientText}>
-                                        {ingredient}
-                                    </Text>
-                                    <Text style={styles.measureText}>
-                                        {measure}
-                                    </Text>
-                                </View>
-                            );
-                        }
-                        return null;
+                    {ingredients.map((ingredient, index) => {
+                        return (
+                            <View style={styles.tableRow} key={index}>
+                                <Text style={styles.ingredientText}>
+                                    {ingredient.ingredient}
+                                </Text>
+                                <Text style={styles.measureText}>
+                                    {ingredient.measure}
+                                </Text>
+                            </View>
+                        );
                     })}
                 </View>
                 <Text style={styles.subtitle}>Instructions:</Text>

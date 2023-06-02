@@ -41,7 +41,7 @@ export default function FavoriteCocktails({ route }) {
 
     const renderCocktail = ({ item }) => {
         const windowWidth = Dimensions.get("window").width;
-        const cardWidth = (windowWidth - 30) / 2;
+        const cardWidth = (windowWidth - 60) / 2;
 
         return (
             <TouchableOpacity
