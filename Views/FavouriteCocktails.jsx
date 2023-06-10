@@ -7,17 +7,19 @@ import {
     TouchableOpacity,
     Image,
     Dimensions,
+    RefreshControl,
 } from "react-native";
 import * as SQLite from "expo-sqlite";
 import { useNavigation } from "@react-navigation/native";
 
 export default function FavoriteCocktails({ route }) {
     const [cocktails, setCocktails] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
     // const { db } = route.params;
     const db = SQLite.openDatabase("savedCocktails.db");
     const navigation = useNavigation();
 
-    useEffect(() => {
+    const fetchCocktails = () => {
         try {
             db.transaction((tx) => {
                 tx.executeSql(
@@ -32,7 +34,13 @@ export default function FavoriteCocktails({ route }) {
             });
         } catch (error) {
             console.log("Error retrieving data from database:", error);
+        } finally {
+            setRefreshing(false);
         }
+    };
+
+    useEffect(() => {
+        fetchCocktails();
     }, []);
 
     const handleCardPress = (cocktail) => {
@@ -54,6 +62,11 @@ export default function FavoriteCocktails({ route }) {
         );
     };
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        fetchCocktails();
+    };
+
     return (
         <View style={styles.container}>
             {cocktails.length ? (
@@ -62,6 +75,12 @@ export default function FavoriteCocktails({ route }) {
                     renderItem={renderCocktail}
                     keyExtractor={(item) => item.idDrink}
                     numColumns={2}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                        />
+                    }
                 />
             ) : (
                 <Text>No saved cocktails found</Text>
@@ -75,6 +94,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        marginTop: 10,
     },
     card: {
         backgroundColor: "#fff",

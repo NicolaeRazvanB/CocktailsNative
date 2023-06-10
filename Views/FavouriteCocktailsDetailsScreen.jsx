@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import {
+    StyleSheet,
+    Text,
+    View,
+    Image,
+    TouchableOpacity,
+    Dimensions,
+} from "react-native";
 import * as SQLite from "expo-sqlite";
+import { useNavigation } from "@react-navigation/native";
+import { colors } from "../constants/theme";
 
 export default function FavouriteCocktailDetailsScreen({ route }) {
+    const navigation = useNavigation();
     const { cocktail } = route.params;
     const db = SQLite.openDatabase("./savedCocktails.db");
-    const [saved, setSaved] = useState(false);
+    const [saved, setSaved] = useState(true);
+    const [activeTab, setActiveTab] = useState("ingredients");
 
     const ingredientsList = cocktail.ingredients.split(";");
     const measuresList = cocktail.measures.split(";");
@@ -19,6 +30,7 @@ export default function FavouriteCocktailDetailsScreen({ route }) {
             });
     }
     const deleteCocktail = (idDrink) => {
+        setSaved(false);
         db.transaction((tx) => {
             tx.executeSql(
                 "DELETE FROM favorites WHERE idDrink = ?",
@@ -30,18 +42,19 @@ export default function FavouriteCocktailDetailsScreen({ route }) {
                         [],
                         (_, { rows }) => console.log(rows)
                     );
+                    setTimeout(() => {
+                        navigation.goBack();
+                    }, 2000);
                 },
                 (err) => console.log("Error deleting cocktail:", err)
             );
         });
     };
 
-    return (
-        <View style={styles.container}>
-            <View style={styles.textContainer}>
-                <Text style={styles.title}>{cocktail.name}</Text>
-                <Text style={styles.subtitle}>Ingredients:</Text>
-                <View style={styles.tableContainer}>
+    const renderContent = () => {
+        if (activeTab === "ingredients") {
+            return (
+                <View style={styles.contentContainer}>
                     {ingredients.map((ingredient, index) => {
                         return (
                             <View style={styles.tableRow} key={index}>
@@ -55,20 +68,108 @@ export default function FavouriteCocktailDetailsScreen({ route }) {
                         );
                     })}
                 </View>
-                <Text style={styles.subtitle}>Instructions:</Text>
-                <Text>{cocktail.instructions}</Text>
+            );
+        } else if (activeTab === "instructions") {
+            return (
+                <View style={styles.contentContainer}>
+                    <Text style={{ fontSize: 16 }}>
+                        {cocktail.instructions}
+                    </Text>
+                </View>
+            );
+        }
+    };
+
+    const imageHeight = (Dimensions.get("window").height - 20) / 2.5;
+    return (
+        <View style={styles.container}>
+            <View style={[styles.imageContainer, { height: imageHeight }]}>
+                <Image
+                    style={styles.image}
+                    source={{ uri: cocktail.imageUrl }}
+                ></Image>
+            </View>
+            <View style={styles.textContainer}>
+                <View style={styles.tagsContainer}>
+                    <Text style={{ marginRight: 10 }}>Tags:</Text>
+                    <View style={styles.tag}>
+                        <Text>{cocktail.type}</Text>
+                    </View>
+                    <View style={styles.tag}>
+                        <Text>{cocktail.category}</Text>
+                    </View>
+                </View>
+                <View style={styles.header}>
+                    <Text style={styles.title}>{cocktail.name}</Text>
+                    {saved ? (
+                        <TouchableOpacity
+                            onPress={() => deleteCocktail(cocktail.idDrink)}
+                        >
+                            <Image
+                                style={styles.icon}
+                                source={require("../assets/icons/heart-solid.png")}
+                            />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity>
+                            <Image
+                                style={styles.icon}
+                                source={require("../assets/icons/heart-regular.png")}
+                            />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                <View style={styles.switchContainer}>
+                    <TouchableOpacity
+                        onPress={() => setActiveTab("ingredients")}
+                        style={[
+                            styles.tabButton,
+                            activeTab === "ingredients" && styles.switchOn,
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.subtitle,
+                                activeTab === "ingredients" &&
+                                    styles.activeTabText,
+                            ]}
+                        >
+                            Ingredients
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => setActiveTab("instructions")}
+                        style={[
+                            styles.tabButton,
+                            activeTab === "instructions" && styles.switchOn,
+                        ]}
+                    >
+                        <Text
+                            style={[
+                                styles.subtitle,
+                                activeTab === "instructions" &&
+                                    styles.activeTabText,
+                            ]}
+                        >
+                            Instructions
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                {renderContent()}
+                {/* <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleSaveToFavorites}
+                >
+                    <Text style={styles.buttonText}>Save to Favorites</Text>
+                </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.button}
                     onPress={() => deleteCocktail(cocktail.idDrink)}
                 >
                     <Text style={styles.buttonText}>Delete from Favorites</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.imageContainer}>
-                <Image
-                    style={styles.image}
-                    source={{ uri: cocktail.imageUrl }}
-                />
+                </TouchableOpacity> */}
             </View>
         </View>
     );
@@ -77,58 +178,109 @@ export default function FavouriteCocktailDetailsScreen({ route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: "row",
+        width: "100%",
+        flexDirection: "column",
+        justifyContent: "center",
         alignItems: "stretch",
-        justifyContent: "flex-start",
         padding: 10,
+        position: "absolute",
     },
     textContainer: {
         flex: 1,
         alignItems: "flex-start",
-        justifyContent: "flex-start",
+        // justifyContent: "flex-start",
         padding: 10,
+        width: "100%",
     },
     imageContainer: {
+        // position: "relative",
+        // height: 200,
+        width: "100%",
         flex: 1,
+        overflow: "hidden",
+        borderRadius: 10,
+    },
+    image: {
+        height: "100%",
+        width: "100%",
+        resizeMode: "cover",
+    },
+    tagsContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 10,
+    },
+    tag: {
+        backgroundColor: colors.lightBlue,
+        borderRadius: 20,
+        padding: 10,
+        height: 40,
+        width: 120,
+        marginHorizontal: 5,
         alignItems: "center",
         justifyContent: "center",
-        padding: 10,
+    },
+    header: {
+        flexDirection: "row",
+        width: "100%",
+        alignItems: "center",
+        marginBottom: 20,
+    },
+    icon: {
+        height: 30,
+        width: 30,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 10,
+        marginRight: 30,
+    },
+    switchContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: colors.blue,
+        width: "80%",
+        height: 50,
+        borderRadius: 50,
+        paddingHorizontal: 10,
+        alignSelf: "center",
+    },
+    switchOn: {
+        backgroundColor: colors.white,
+        borderRadius: 50,
+        width: "50%",
+    },
+    tabButton: {
+        width: "50%",
+        alignItems: "center",
+        paddingVertical: 5,
+    },
+    activeTabText: {
+        fontWeight: "bold",
     },
     subtitle: {
         fontSize: 18,
-        fontWeight: "bold",
-        marginTop: 10,
-        marginBottom: 5,
     },
-    tableContainer: {
+    contentContainer: {
+        alignSelf: "center",
         marginTop: 10,
         marginBottom: 20,
+        padding: 10,
+        width: "90%",
     },
     tableRow: {
         flexDirection: "row",
-        alignItems: "center",
+        justifyContent: "space-between",
         marginBottom: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: colors.lightGray,
+        paddingBottom: 5,
     },
     ingredientText: {
         marginRight: 10,
     },
     measureText: {
         marginLeft: 10,
-    },
-    imageContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    image: {
-        height: "100%",
-        width: "100%",
-        resizeMode: "cover",
     },
     button: {
         backgroundColor: "blue",
