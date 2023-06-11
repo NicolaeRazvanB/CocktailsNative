@@ -60,14 +60,14 @@ export default function App() {
         });
     }, []);
 
-    // if (!splashLoaded || !fontsLoaded) {
-    //     return (
-    //         <CustomSplashScreen
-    //             fadeInAnim={fadeInAnim}
-    //             setSplashLoaded={setSplashLoaded}
-    //         />
-    //     );
-    // }
+    if (!splashLoaded || !fontsLoaded) {
+        return (
+            <CustomSplashScreen
+                fadeInAnim={fadeInAnim}
+                setSplashLoaded={setSplashLoaded}
+            />
+        );
+    }
 
     return (
         <NavigationContainer>

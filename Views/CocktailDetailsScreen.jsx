@@ -33,7 +33,40 @@ export default function CocktailDetailsScreen({ route }) {
         }
     }
 
+    const checkIfCocktailExists = async () => {
+        return new Promise((resolve, reject) => {
+            db.transaction((tx) => {
+                tx.executeSql(
+                    "SELECT COUNT(*) FROM favorites WHERE idDrink = ?",
+                    [cocktail.idDrink],
+                    (_, { rows }) => {
+                        const count = rows.item(0)["COUNT(*)"];
+                        resolve(count > 0);
+                    },
+                    (_, error) => {
+                        reject(error);
+                        return false;
+                    }
+                );
+            });
+        });
+    };
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const cocktailExists = await checkIfCocktailExists();
+                setSaved(cocktailExists);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
     const deleteCocktail = (idDrink) => {
+        setSaved(false);
         db.transaction((tx) => {
             tx.executeSql(
                 "DELETE FROM favorites WHERE idDrink = ?",
@@ -52,6 +85,7 @@ export default function CocktailDetailsScreen({ route }) {
     };
 
     const handleSaveToFavorites = () => {
+        setSaved(true);
         db.transaction((tx) => {
             tx.executeSql(
                 "INSERT INTO favorites (idDrink, name, category, type, glass, instructions, imageUrl, ingredients, measures) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -130,14 +164,32 @@ export default function CocktailDetailsScreen({ route }) {
                 </View>
                 <View style={styles.header}>
                     <Text style={styles.title}>{cocktail.strDrink}</Text>
-                    <TouchableOpacity>
-                        <Image
-                            style={styles.icon}
-                            source={require("../assets/icons/heart-regular.png")}
-                        />
-                    </TouchableOpacity>
+                    {saved ? (
+                        <TouchableOpacity
+                            onPress={() => deleteCocktail(cocktail.idDrink)}
+                        >
+                            <Image
+                                style={styles.saveIcon}
+                                source={require("../assets/icons/heart-solid.png")}
+                            />
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={handleSaveToFavorites}>
+                            <Image
+                                style={styles.saveIcon}
+                                source={require("../assets/icons/heart-regular.png")}
+                            />
+                        </TouchableOpacity>
+                    )}
                 </View>
-
+                <Text style={styles.glassInfo}>
+                    Suggested serving:
+                    <Image
+                        style={styles.glassIcon}
+                        source={require("../assets/icons/glass-martini-solid.png")}
+                    />
+                    {cocktail.strGlass}
+                </Text>
                 <View style={styles.switchContainer}>
                     <TouchableOpacity
                         onPress={() => setActiveTab("ingredients")}
@@ -176,18 +228,6 @@ export default function CocktailDetailsScreen({ route }) {
                     </TouchableOpacity>
                 </View>
                 {renderContent()}
-                {/* <TouchableOpacity
-                    style={styles.button}
-                    onPress={handleSaveToFavorites}
-                >
-                    <Text style={styles.buttonText}>Save to Favorites</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => deleteCocktail(cocktail.idDrink)}
-                >
-                    <Text style={styles.buttonText}>Delete from Favorites</Text>
-                </TouchableOpacity> */}
             </View>
         </View>
     );
@@ -242,16 +282,26 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         alignItems: "center",
-        marginBottom: 20,
+        marginTop: 10,
     },
-    icon: {
+    saveIcon: {
         height: 30,
         width: 30,
+    },
+    glassIcon: {
+        height: 20,
+        width: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginRight: 30,
+    },
+    glassInfo: {
+        fontSize: 16,
+        marginBottom: 20,
+        paddingBottom: 10,
+        marginTop: 5,
     },
     switchContainer: {
         flexDirection: "row",
